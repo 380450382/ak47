@@ -21,7 +21,7 @@ public class PluginDefinition implements Serializable {
 
 
     public int getId() {
-        String id = name + url + jar + className + expression;
+        String id = name + url + jar + className;
         return id.hashCode();
     }
 }

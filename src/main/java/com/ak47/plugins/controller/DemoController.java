@@ -42,13 +42,19 @@ public class DemoController {
     }
 
     @GetMapping("install")
-    public void install(int pluginsId) {
+    public void install(int pluginsId,String expression) {
         for (PluginDefinition pluginDefinition : aopPluginFactory.getPluginList(PluginSourceEnum.ALL_PLUGIN)) {
             if(pluginDefinition.getId() == pluginsId){
+                pluginDefinition.setExpression(expression);
                 aopPluginFactory.installPlugin(pluginDefinition);
                 break;
             }
         }
+    }
+
+    @GetMapping("updatePluginExpression")
+    public void updatePluginExpression(int pluginsId,String expression) {
+        aopPluginFactory.updatePluginExpression(pluginsId,expression);
     }
 
     @GetMapping("enablePlugin")

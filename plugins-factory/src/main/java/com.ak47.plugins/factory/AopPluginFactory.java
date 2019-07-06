@@ -13,6 +13,8 @@ public interface AopPluginFactory {
 
     void installPlugin(PluginDefinition pluginDefinition);
 
+    void updatePluginExpression(int pluginId,String expression);
+
     void uninstallPlugin(int pluginId);
 
     List<PluginDefinition> getPluginList(PluginSourceEnum pluginSourceEnum);

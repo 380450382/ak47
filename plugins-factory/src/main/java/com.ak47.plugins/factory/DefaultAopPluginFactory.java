@@ -134,6 +134,18 @@ public class DefaultAopPluginFactory implements AopPluginFactory,InitializingBea
     }
 
     @Override
+    public void updatePluginExpression(int pluginId, String expression) {
+        PluginDefinition pluginDefinition = definitionCache.get(pluginId);
+        if(pluginDefinition == null) {
+            throw new PluginException("修改失败,可能还未安装");
+        }
+        disablePlugin(pluginId);
+        pluginDefinition.setExpression(expression);
+        storeDefinitionCache();
+        enablePlugin(pluginId);
+    }
+
+    @Override
     public void installPlugin(PluginDefinition pluginDefinition) {
         if(definitionCache.containsKey(pluginDefinition.getId())){
             logger.warn("{}:已存在插件",pluginDefinition.getId());
