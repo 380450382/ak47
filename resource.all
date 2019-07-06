@@ -1,12 +1,12 @@
 [
 	{
-	"active": true,
-	"className": "com.ak47.plugins.aop.ImportAop",
-	"expression": "execution(* com.ak47.plugins.service.impl..*.say(..))",
-	"id": 500190356,
-	"jar": "plugins-factory-0.0.1-SNAPSHOT.jar",
-	"name": "plugins-factory-0.0.1-SNAPSHOT",
-	"url": "file:///D:/code/plugins/plugin-core/plugins-factory/target/plugins-factory-0.0.1-SNAPSHOT.jar",
-	"version": "0.0.1-SNAPSHOT"
-}
+        "active": true,
+        "className": "com.ak47.plugins.aop.ImportAop",
+        "expression": "execution(* com.ak47.plugins.service.impl..*.say(..))",
+        "id": 500190356,
+        "jar": "plugins-factory-0.0.1-SNAPSHOT.jar",
+        "name": "plugins-factory-0.0.1-SNAPSHOT",
+        "url": "file:///D:/code/plugins/plugin-core/plugins-factory/target/plugins-factory-0.0.1-SNAPSHOT.jar",
+        "version": "0.0.1-SNAPSHOT"
+    }
 ]
