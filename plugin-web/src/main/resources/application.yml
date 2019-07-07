@@ -1,0 +1,19 @@
+spring:
+    profiles:
+        active: plugin,web
+    redis:
+        database: 0
+        host: 192.168.85.129
+        port: 6379
+        password: 123456
+        pool:
+            max-active: 10
+            max-wait: 50000
+            max-idle: 8
+            min-idle: 0
+        timeout: 60000
+redis:
+    remote-key: remote_cache
+    remote-expire: 86400000
+server:
+    port: 8080

@@ -1,0 +1,4 @@
+web:
+    plugin:
+        view_variable: content_scene
+        view_path: layout/layout

@@ -1,9 +1,0 @@
-#plugin:
-#    base_dir: C:\Users\cmx\.p
-#    plugin_cache: plugin_cache.cache
-#    remote_resource: D:\code\plugins\plugin-core\resource.all
-spring:
-    profiles:
-        active: dev,plugin
-server:
-    port: 8080

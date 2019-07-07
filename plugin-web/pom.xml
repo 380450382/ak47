@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>plugin-core</artifactId>
+        <groupId>com.ak47.plugins</groupId>
+        <version>${plugin.version}</version>
+    </parent>
+    <properties>
+        <plugin.version>0.0.1-SNAPSHOT</plugin.version>
+    </properties>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>plugin-web</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.ak47.plugins</groupId>
+            <artifactId>plugin-factory</artifactId>
+            <version>${plugin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-freemarker</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <!--  redis -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+    </dependencies>
+
+
+</project>
