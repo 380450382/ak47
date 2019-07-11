@@ -1,0 +1,7 @@
+web:
+    plugin:
+        view_variable: content_scene
+        view_path: layout/layout
+local:
+    jar:
+        temp: C:\Users\cmx\.local\

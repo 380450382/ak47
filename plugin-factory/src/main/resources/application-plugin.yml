@@ -1,4 +1,5 @@
 plugin:
     base_dir: C:\Users\cmx\.p
     plugin_cache: plugin_cache.cache
-    remote_resource: file:\\\D:\code\plugins\plugin-core\resource.all
+#    remote_resource: file:\\\D:\code\plugins\plugin-core\resource.all
+    remote_resource: http://127.0.0.1:8080/api/getResource

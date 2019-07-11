@@ -1,0 +1,17 @@
+spring:
+    profiles:
+        active: resource,web
+    servlet:
+        multipart:
+            max-file-size: 524288000
+            max-request-size: 524288000
+server:
+    port: 8080
+ftp:
+    times: 5
+    port: 21
+    host: 192.168.85.129
+    username: ftpcmx
+    password: ftpcmx
+    jarPath: /plugin/jar
+    resourcePath: /plugin

@@ -6,7 +6,9 @@
         <module>plugin-factory</module>
         <module>plugin-web</module>
 		<module>plugin-demo</module>
-	</modules>
+        <module>plugin-resource</module>
+        <module>plugin-resource-web</module>
+    </modules>
     <parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>

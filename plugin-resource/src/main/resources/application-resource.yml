@@ -1,0 +1,4 @@
+resource:
+    base_dir: C:\Users\cmx\.pr
+    resource_type: ftp
+    resource_name: resource.all

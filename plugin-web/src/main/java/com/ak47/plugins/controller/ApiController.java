@@ -54,14 +54,14 @@ public class ApiController {
     }
 
     @GetMapping("enablePlugin")
-    public BaseResult enablePlugin(int pluginsId,boolean isCover) {
-        aopPluginFactory.enablePlugin(pluginsId,isCover);
+    public BaseResult enablePlugin(int pluginsId,boolean isCover, String expression) {
+        aopPluginFactory.enablePlugin(pluginsId,isCover,expression);
         return BaseResult.success();
     }
 
     @GetMapping("disablePlugin")
-    public BaseResult disablePlugin(int pluginsId,boolean isClear) {
-        aopPluginFactory.disablePlugin(pluginsId,isClear);
+    public BaseResult disablePlugin(int pluginsId,boolean isClear, String expression) {
+        aopPluginFactory.disablePlugin(pluginsId,isClear,expression);
         return BaseResult.success();
     }
 

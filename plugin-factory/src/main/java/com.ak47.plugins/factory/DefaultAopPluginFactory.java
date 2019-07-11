@@ -13,9 +13,7 @@ import org.springframework.aop.aspectj.AspectJExpressionPointcutAdvisor;
 import org.springframework.aop.framework.Advised;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -32,47 +30,23 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class DefaultAopPluginFactory implements AopPluginFactory,InitializingBean {
+public class DefaultAopPluginFactory extends AbstractAopPluginFactory implements InitializingBean{
     private final static Logger logger = LoggerFactory.getLogger(DefaultAopPluginFactory.class);
     @Autowired
     private ApplicationContext applicationContext;
     @Autowired
-    private Environment environment;
-    @Autowired
     private RedisService redisService;
     private Map<Integer,PluginDefinition> definitionCache = new ConcurrentHashMap<>();
     private Map<String,Advice> adviceCache = new ConcurrentHashMap<>();
-    @Value("${plugin.base_dir}")
-    private String BASE_DIR = System.getProperty("user.dir") + "/.plugins";
-    @Value("${plugin.plugin_cache}")
-    private String PLUGIN_CACHE = "plugin_cache.pc";
-    @Value("${redis.remote-key}")
-    private String REMOTE_KEY = "remote_key";
-    @Value("${redis.remote-expire}")
-    private Long REMOTE_EXPIRE = 50000L;
-    @Value("${plugin.remote_resource}")
-    private String REMOTE_RESOURCE = "file://" + System.getProperty("user.dir") + "/resource/plugins.all";
-    {
-//        BASE_DIR = StringUtils.isBlank(environment.getProperty("plugin.base_dir"))?System.getProperty("user.dir") + "/.plugins":environment.getProperty("plugin.base_dir");
-//        PLUGIN_CACHE = StringUtils.isBlank(environment.getProperty("plugin.plugin_cache"))?"plugin_cache.pc":environment.getProperty("plugin.plugin_cache");
-//        REMOTE_RESOURCE = StringUtils.isBlank(environment.getProperty("plugin.remote_resource"))?"file://" + System.getProperty("user.dir") + "/resource/plugins.all":environment.getProperty("plugin.remote_resource");
-    }
     @Override
     public void afterPropertiesSet() throws Exception {
+        super.init();
         init();
     }
 
     public void init(){
-        printProperty();
         initDefinitionCache();
         initAdviceCache();
-    }
-
-    public void printProperty(){
-        logger.info("plugins基础属性配置");
-        logger.info("base_dir:{}",BASE_DIR);
-        logger.info("plugin_cache:{}",PLUGIN_CACHE);
-        logger.info("remote_resource:{}",REMOTE_RESOURCE);
     }
 
     public void initAdviceCache(){
@@ -82,7 +56,7 @@ public class DefaultAopPluginFactory implements AopPluginFactory,InitializingBea
                 int count = pluginDefinition.getCount();
                 pluginDefinition.clearCount();
                 for (int i = 0; i < count; i++) {
-                    enablePlugin(pluginDefinition.getId(),false);
+                    enablePlugin(pluginDefinition.getId(),false,null);
                 }
             }
         });
@@ -96,15 +70,14 @@ public class DefaultAopPluginFactory implements AopPluginFactory,InitializingBea
         pluginDefinitions.forEach(pluginDefinition -> definitionCache.put(pluginDefinition.getId(),pluginDefinition));
     }
 
-    public void enablePlugin(int pluginId) {
-        enablePlugin(pluginId,true);
-    }
-
     @Override
-    public void enablePlugin(int pluginId,boolean isCover) {
+    public void enablePlugin(int pluginId,boolean isCover,String expression) {
         PluginDefinition pluginDefinition = definitionCache.get(pluginId);
         if(pluginDefinition == null) {
             throw new PluginException("启动失败,可能还未安装");
+        }
+        if(StringUtils.isNotBlank(expression)) {
+            pluginDefinition.setExpression(expression);
         }
         Advice advice = adviceCache.get(pluginDefinition.getClassName());
         if(advice == null){
@@ -136,15 +109,14 @@ public class DefaultAopPluginFactory implements AopPluginFactory,InitializingBea
         storeDefinitionCache();
     }
 
-    public void disablePlugin(int pluginId) {
-        disablePlugin(pluginId,true);
-    }
-
     @Override
-    public void disablePlugin(int pluginId, boolean isClear) {
+    public void disablePlugin(int pluginId, boolean isClear,String expression) {
         PluginDefinition pluginDefinition = definitionCache.get(pluginId);
         if(pluginDefinition == null) {
             throw new PluginException("禁用失败,可能还未安装");
+        }
+        if(StringUtils.isNotBlank(expression)) {
+            pluginDefinition.setExpression(expression);
         }
         Advice advice = adviceCache.get(pluginDefinition.getClassName());
         if(advice == null){
@@ -217,50 +189,6 @@ public class DefaultAopPluginFactory implements AopPluginFactory,InitializingBea
         storeDefinitionCache();
     }
 
-    public String fetchFile(String filePath){
-        StringBuilder pluginDefinitionJson = new StringBuilder();
-        File file = new File(filePath);
-        if(file.exists()){
-            try(InputStream inputStream = new FileInputStream(file);
-                Reader reader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(reader)) {
-                String line;
-                while((line = bufferedReader.readLine()) != null){
-                    pluginDefinitionJson.append(line);
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return pluginDefinitionJson.toString();
-    }
-
-    public String fetchUrl(String resourceUrl){
-        StringBuilder pluginDefinitionJson = new StringBuilder();
-        try {
-            URL url = new URL(resourceUrl);
-            try(InputStream inputStream = url.openStream();
-                Reader reader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(reader)) {
-                String line;
-                while((line = bufferedReader.readLine()) != null){
-                    pluginDefinitionJson.append(line);
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return pluginDefinitionJson.toString();
-    }
-
     @Override
     public List<PluginDefinition> getPluginList(PluginSourceEnum pluginSourceEnum) {
         String pluginDefinitionJson = null;
@@ -284,7 +212,7 @@ public class DefaultAopPluginFactory implements AopPluginFactory,InitializingBea
         return new ArrayList<>();
     }
 
-    public Advice buildPlugin(PluginDefinition pluginDefinition){
+    private Advice buildPlugin(PluginDefinition pluginDefinition){
         if(adviceCache.containsKey(pluginDefinition.getClassName())){
             return adviceCache.get(pluginDefinition.getClassName());
         }
@@ -347,11 +275,7 @@ public class DefaultAopPluginFactory implements AopPluginFactory,InitializingBea
         throw new PluginException("构建失败");
     }
 
-    public String getLoclFile(String file){
-        return BASE_DIR + "/" + file;
-    }
-
-    public void storeDefinitionCache(){
+    private void storeDefinitionCache(){
         String definitions = JSON.toJSONString(definitionCache.values());
         File file = new File(getLoclFile(PLUGIN_CACHE));
         try {
@@ -363,6 +287,7 @@ public class DefaultAopPluginFactory implements AopPluginFactory,InitializingBea
             }
         } catch (IOException e) {
             e.printStackTrace();
+            throw new PluginException("文件不存在，并创建失败");
         }
         try (FileOutputStream outputStream = new FileOutputStream(file);
              Writer writer = new OutputStreamWriter(outputStream)){

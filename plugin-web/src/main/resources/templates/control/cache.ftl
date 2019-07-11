@@ -54,7 +54,8 @@
                         method:"get",
                         data:{
                             pluginsId:data.id,
-                            isCover:isCover
+                            isCover:isCover,
+                            expression:data.expression
                         },
                         dataType:"json",
                         success(result){
@@ -89,7 +90,8 @@
                         method:"get",
                         data:{
                             pluginsId:data.id,
-                            isClear:isClear
+                            isClear:isClear,
+                            expression:data.expression
                         },
                         dataType:"json",
                         success(result){

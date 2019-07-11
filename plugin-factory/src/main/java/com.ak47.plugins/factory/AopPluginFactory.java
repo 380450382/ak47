@@ -7,9 +7,9 @@ import com.ak47.plugins.enums.PluginSourceEnum;
 import java.util.List;
 
 public interface AopPluginFactory {
-    void enablePlugin(int pluginId,boolean isCover);
+    void enablePlugin(int pluginId,boolean isCover,String expression);
 
-    void disablePlugin(int pluginId,boolean isClear);
+    void disablePlugin(int pluginId,boolean isClear,String expression);
 
     void installPlugin(PluginDefinition pluginDefinition);
 
