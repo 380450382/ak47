@@ -1,9 +1,11 @@
 package com.ak47.plugins.remote.handler;
 
+import com.ak47.plugins.common.SystemContent;
 import com.ak47.plugins.exception.ResourceException;
 import com.ak47.plugins.remote.RemoteResourceHandler;
 import com.ak47.plugins.remote.handler.ftp.FtpClientFactory;
 import com.ak47.plugins.remote.handler.ftp.FtpClientPool;
+import com.ak47.plugins.utils.FileUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
@@ -57,40 +59,7 @@ public class FtpResourceHandler implements RemoteResourceHandler,InitializingBea
     @Override
     public String uploadHandle(InputStream inputStream,String fileName) {
         if(uploadHandle(inputStream,fileName,jarPath)){
-            return "ftp://" + host + ":" + port + jarPath + "/" + fileName;
-        }
-        return null;
-    }
-
-    @Override
-    public String downloadResource(String filename) {
-        FTPClient ftpClient = ftpClientPool.borrowClient();
-        boolean isSuccess = changeWorking(ftpClient,resourcePath,DEFAULT_TIMES);
-        if(!isSuccess){
-            throw new ResourceException("FTP目录切换失败");
-        }
-        try {
-            for (FTPFile ftpFile : ftpClient.listFiles()) {
-                if(ftpFile.getName().equals(filename)){
-                    try (InputStream inputStream =  ftpClient.retrieveFileStream(filename);
-                         Reader reader = new InputStreamReader(inputStream);
-                         BufferedReader bufferedReader = new BufferedReader(reader)){
-                        StringBuilder resource = new StringBuilder();
-                        String line;
-                        while((line=bufferedReader.readLine())!=null){
-                            resource.append(line);
-                        }
-                        return resource.toString();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        throw new ResourceException("下载失败");
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            ftpClientPool.returnClient(ftpClient);
+            return "ftp://" + host + ":" + port + jarPath + SystemContent.SEPARATOR + fileName;
         }
         return null;
     }
@@ -168,13 +137,7 @@ public class FtpResourceHandler implements RemoteResourceHandler,InitializingBea
 
             for (FTPFile ftpFile : ftpClient.listFiles()) {
                 if(ftpFile.getName().equals(filename)){
-                    File file = new File(temp + "/" + filename);
-                    if(!file.getParentFile().exists()){
-                        file.getParentFile().mkdirs();
-                        file.createNewFile();
-                    } else if (!file.exists()){
-                        file.createNewFile();
-                    }
+                    File file = FileUtil.ifAbsent(temp + SystemContent.SEPARATOR + filename);
                     try (OutputStream outputStream = new FileOutputStream(file)){
                         ftpClient.retrieveFile(filename,outputStream);
                     } catch (IOException e) {
@@ -194,7 +157,8 @@ public class FtpResourceHandler implements RemoteResourceHandler,InitializingBea
     }
 
     @Override
-    public boolean downloadHandle(String filename,String path) {
+    public boolean downloadResourceHandler(String path) {
+        String filename = path.substring(path.lastIndexOf(SystemContent.SEPARATOR)+1);
         FTPClient ftpClient = ftpClientPool.borrowClient();
         try {
             boolean isSuccess = changeWorking(ftpClient,resourcePath,DEFAULT_TIMES);
@@ -204,13 +168,7 @@ public class FtpResourceHandler implements RemoteResourceHandler,InitializingBea
 
             for (FTPFile ftpFile : ftpClient.listFiles()) {
                 if(ftpFile.getName().equals(filename)){
-                    File file = new File(path);
-                    if(!file.getParentFile().exists()){
-                        file.getParentFile().mkdirs();
-                        file.createNewFile();
-                    } else if (!file.exists()){
-                        file.createNewFile();
-                    }
+                    File file = FileUtil.ifAbsent(path);
                     try (OutputStream outputStream = new FileOutputStream(file)){
                         return ftpClient.retrieveFile(filename,outputStream);
                     } catch (IOException e) {
@@ -228,4 +186,24 @@ public class FtpResourceHandler implements RemoteResourceHandler,InitializingBea
         return false;
     }
 
+    @Override
+    public String fetchResourceContent(String path) {
+        if(!FileUtil.exists(path)){
+            downloadResourceHandler(path);
+        }
+        File file = new File(path);
+        try (InputStream inputStream =  new FileInputStream(file);
+             Reader reader = new InputStreamReader(inputStream);
+             BufferedReader bufferedReader = new BufferedReader(reader)){
+            StringBuilder resource = new StringBuilder();
+            String line;
+            while((line=bufferedReader.readLine())!=null){
+                resource.append(line);
+            }
+            return resource.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new ResourceException("下载失败");
+        }
+    }
 }

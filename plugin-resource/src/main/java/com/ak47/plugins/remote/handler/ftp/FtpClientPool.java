@@ -1,5 +1,6 @@
 package com.ak47.plugins.remote.handler.ftp;
 
+import com.ak47.plugins.common.SystemContent;
 import com.ak47.plugins.exception.ResourceException;
 import org.apache.commons.net.ftp.FTPClient;
 import org.slf4j.Logger;

@@ -28,8 +28,9 @@ public class DefaultResourceFactory extends AbstractResourceFactory implements I
     }
 
     private void initDefinitionCache(){
-        boolean isSuccess = getResourceHandler(RESOURCE_TYPE).downloadHandle(RESOURCE_NAME,getLoclFile(RESOURCE_NAME));
-        File file = new File(getLoclFile(RESOURCE_NAME));
+        String resourcePath = getLoclFile(RESOURCE_NAME);
+        boolean isSuccess = getResourceHandler(RESOURCE_TYPE).downloadResourceHandler(resourcePath);
+        File file = new File(resourcePath);
         if(!isSuccess){
             logger.info("远程资源库下载失败,尝试使用本地资源");
             if(!file.exists()){
@@ -113,8 +114,8 @@ public class DefaultResourceFactory extends AbstractResourceFactory implements I
     }
 
     @Override
-    public String downloadResource() {
-        return getResourceHandler(RESOURCE_TYPE).downloadResource(RESOURCE_NAME);
+    public String fetchResourceContent() {
+        return getResourceHandler(RESOURCE_TYPE).fetchResourceContent(getLoclFile(RESOURCE_NAME));
     }
 
     private void storedefinitionCache() {

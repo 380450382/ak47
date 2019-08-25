@@ -11,11 +11,11 @@ public interface RemoteResourceHandler {
 
     boolean deleteHandle(String jar);
 
-    boolean downloadHandle(String filename,String path);
+    boolean downloadResourceHandler(String path);
 
     File downloadJar(String filename,String temp);
 
-    String downloadResource(String filename);
+    String fetchResourceContent(String path);
 
     boolean storeResourceFileHandler(File file);
 

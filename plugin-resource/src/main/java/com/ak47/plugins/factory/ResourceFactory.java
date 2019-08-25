@@ -16,7 +16,7 @@ public interface ResourceFactory {
 
     boolean deleteResources(int resourcesId, boolean delFile);
 
-    String downloadResource();
+    String fetchResourceContent();
 
     boolean addUploadFile(File file);
 

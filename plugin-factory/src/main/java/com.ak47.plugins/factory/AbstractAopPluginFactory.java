@@ -96,7 +96,7 @@ public abstract class AbstractAopPluginFactory implements AopPluginFactory {
     }
 
     public String getLoclFile(String file){
-        return BASE_DIR + "/" + file;
+        return BASE_DIR + System.getProperty("file.separator") + file;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.ak47.plugins.factory;
 
+import com.ak47.plugins.common.SystemContent;
 import com.ak47.plugins.exception.ResourceException;
 import com.ak47.plugins.remote.RemoteResourceHandler;
 import org.slf4j.Logger;
@@ -79,7 +80,7 @@ public abstract class AbstractResourceFactory implements ResourceFactory {
     }
 
     protected String getLoclFile(String file) {
-        return BASE_DIR + "/" + file;
+        return BASE_DIR + SystemContent.SEPARATOR + file;
     }
 
 }

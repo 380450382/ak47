@@ -36,7 +36,7 @@ public class ApiController {
 
     @GetMapping("getResource")
     public String getResource() {
-        return defaultResourceFactory.downloadResource();
+        return defaultResourceFactory.fetchResourceContent();
     }
 
     @GetMapping("getJar.jar")
